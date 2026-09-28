@@ -1,0 +1,19 @@
+flowchart TD
+    U["Usuario (terminal)"] --> G["Guardarraíl<br/>(código)"]
+    G -->|bloquea| X["Rechazo registrado"]
+    G --> P{"¿Acción pendiente?"}
+
+    P -->|no| I["LLM interpreta<br/>intención · expediente · documento · needs"]
+    I --> K["Permisos y lecturas<br/>(código)"]
+    K --> C["API Expediente"]
+    K --> W["API Taller"]
+    K --> H["SQLite<br/>histórico"]
+    C --> D{"Decisión<br/>(código)"}
+    W --> D
+    H --> D
+    D -->|consulta| R["LLM redacta la respuesta"]
+    D -->|solicitar documento| V["Precondiciones + idempotencia<br/>→ pide confirmación"]
+
+    P -->|sí| S{"Consentimiento<br/>(código)"}
+    S -->|confirma| A["API Acciones<br/>POST + X-Idempotency-Key"]
+    S -->|cancela / ambiguo| N["No se ejecuta"]
